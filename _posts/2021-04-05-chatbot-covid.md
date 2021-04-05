@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Daily Cases of Covid19 Bot"
+title: "Chat Bot for Daily Cases of Covid19"
 description: "A telegram chat bot to provide daily cases of Covid19 information around the world, especially in Indonesia"
-date: 2021-03-27 09:39:18
+date: 2021-04-05 09:39:18
 comments: true
 keywords: "bot, covid19, chat"
 category: [dev]
