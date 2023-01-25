@@ -21,7 +21,7 @@ user:
   name: Amelia Rahman
   pic: /assets/img/amelia.jpg
   picAlt: "ameliarahman"
-  job: Love to discuss related to tech and books
+  job: Love to discuss related to books and tech!
   # aboutme: true # comment this out if you don't need the 'about' page.
 
 exclude:
