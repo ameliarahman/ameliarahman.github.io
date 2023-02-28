@@ -10,7 +10,22 @@ tags:
 - nx
 ---
 
-This post is to summary <a href="https://f.hubspotusercontent20.net/hubfs/2757427/effective-react-with-nx-2022.pdf" target="_top"> a book about monorepo with Nx </a> that I recently finished. But I took an example for only setting up monorepo for backend, especially using express with a guide from <a href="https://nx.dev/" target="_top"> the official Nx website </a>
+This post is to summary <a href="https://f.hubspotusercontent20.net/hubfs/2757427/effective-react-with-nx-2022.pdf" target="_top"> a book about monorepo with Nx </a> that I recently finished. But I took an example for only setting up monorepo for backend using express with a guide from <a href="https://nx.dev/" target="_top"> the official Nx website </a>. For the note, I might skip some important things from the book, so better to follow that link and later we can discuss furthermore.
 
 ### Monorepo
-As quoted from the book, `A monorepo is a single repository containing multiple distinct projects, where we don't just have code collocation, but well defined relationships among these projects.` The keyword is `defined relationship`. If we have some services that somehow are related to each other, monorepo is very useful to use.
+As quoted from the book, `A monorepo is a single repository containing multiple distinct projects, where we don't just have code collocation, but well defined relationships among these projects.` The keyword is `defined relationship`. If we have some services that somehow are related to each other, monorepo is very useful to use. For example, to adjust linter setting, so each programmer in the team has the same rule about it. Or even to update the library that is used in all applications, we don't need to change one by one if we use monorepo, just one way and every application in the workspace will be updated.
+
+### Set Up
+To follow the instruction from the book, we can use Nx with version 13.3.0. We can create workspace with the following command:
+```
+npx create-nx-workspace@13.3.0
+```
+*By default, the npx binary comes bundled with NodeJS. It allows you to conveniently install then run a Node binary without the need to install it globally.*
+
+We will be asked to name the workspace and after that we need to choose what type of workspace to build. The workspace name is used by Nx to scope our libraries. 
+![](../assets/img/nx/workspace.png)
+
+Let's choose express and then we need to name first application.
+![](../assets/img/nx/first-app.png)
+
+In addition, Nx asks about setting up Nx Cloud2 (Honestly, I haven't fully understood about this, but the book said: Nx Cloud adds remote distributed computation caching and other performance enhancing features to the Nx workspace. Even though it is the commercial addon for Nx, it comes with a generous free tier. So feel free to go ahead and enable it or skip it entirely).
