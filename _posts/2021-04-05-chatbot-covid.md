@@ -5,7 +5,7 @@ description: "A telegram chat bot to provide daily cases of Covid19 information 
 date: 2021-04-05 09:39:18
 comments: true
 keywords: "bot, covid19, chat"
-category: [dev]
+category: [Tech]
 tags:
 - bot
 ---
