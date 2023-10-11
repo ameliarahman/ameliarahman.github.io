@@ -21,7 +21,7 @@ pg_dump -h hostname_postgresql -U username -d database_name > filename.sql
 - -h hostname_postgresql: specify the hostname of PostgreSQL server.
 - -U username: username used to connect to database.
 - -d database_name: database name.
-- > filename.sql: > symbol used for output redirection and filename.sql is the generated file.
+- `>` filename.sql: > symbol used for output redirection and filename.sql is the generated file.
 
 #### Download the file
 ```
