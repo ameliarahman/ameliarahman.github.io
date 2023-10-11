@@ -2,7 +2,7 @@
 layout: post
 title: "Dump and Restore PostgreSQL"
 description: "How to dump postgres"
-date: 2023-10-11 19:36:18
+date: 2023-10-11 12:36:18
 comments: true
 keywords: "postgresql, database, sql, rds"
 category: [Tech]
