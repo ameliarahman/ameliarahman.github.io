@@ -10,7 +10,7 @@ tags:
 - database
 ---
 
-During development, there will be times when we need to dump database from staging/production environment and restore it to our local. After gathering information from various sources (<a href="https://www.postgresql.org/docs/" target="_top">PostgeSQL</a>, <a href="https://docs.docker.com/engine/reference/commandline/exec/" target="_top">Docker Command</a>, stackoverflow and ask to ChatGPT) and trial error, here's some steps that I usually do:
+During development, there will be times when we need to dump database from staging/production environment and restore it to our local. After gathering information from various sources (<a href="https://www.postgresql.org/docs/" target="_top">PostgeSQL</a>, <a href="https://docs.docker.com/engine/reference/commandline/exec/" target="_top">Docker Command</a>, stackoverflow and ask to ChatGPT) and trial error, here are the steps that I usually do:
 
 <ul>
   <li>SSH to desired server</li>
