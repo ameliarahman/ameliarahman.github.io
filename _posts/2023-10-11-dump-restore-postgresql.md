@@ -18,10 +18,10 @@ During development, there will be times when we need to dump database from stagi
 pg_dump -h hostname_postgresql -U username -d database_name > filename.sql
 ```
 - pg_dump: command in PostgreSQL used for creating backups (dumps) of PostgreSQL databases.
-- h hostname_postgresql: specify the hostname of PostgreSQL server.
+- -h hostname_postgresql: specify the hostname of PostgreSQL server.
 - -U username: username used to connect to database.
 - -d database_name: database name.
-- filename.sql: > symbol is used for output redirection and filename.sql is the generated file.
+- > filename.sql: > symbol used for output redirection and filename.sql is the generated file.
 
 #### Download the file
 ```
@@ -38,7 +38,7 @@ scp -i private_key user@hostname:source_filename.sql destination_filename.sql
 cat your_dump.sql | docker exec -i your-db-container psql -U database_user
 ```
 - cat dump_file.sql: command to read dump_file.sql.
-- |: used to take the outpout from "cat" command and take it as the input to next command.
+- `|`: used to take the outpout from "cat" command and take it as the input to next command.
 - docker exec -i your-db-container: execute a command in a running container.
 - psql -U database_user: used to interact with PostgreSQL databases with -U is the option that specifies the database user to connect as.
 
