@@ -15,13 +15,13 @@ During development, there will be times when we need to dump database from stagi
 #### SSH to desired server
 #### Dump the database
 ```
-pg_dump -h hostname_postgresql -U username -d database_name > filename.sql
+pg_dump -h hostname_postgresql -U username -d database_name > dump_file.sql
 ```
 - pg_dump: command in PostgreSQL used for creating backups (dumps) of PostgreSQL databases.
 - -h hostname_postgresql: specify the hostname of PostgreSQL server.
 - -U username: username used to connect to database.
 - -d database_name: database name.
-- `>` filename.sql: > symbol used for output redirection and filename.sql is the generated file.
+- `>` dump_file.sql: > symbol used for output redirection and dump_file.sql is the generated file.
 
 #### Download the file
 ```
