@@ -35,7 +35,7 @@ scp -i private_key user@hostname:source_filename.sql destination_filename.sql
 
 #### Restore the database to dockerized PotsgreSQL
 ```
-cat your_dump.sql | docker exec -i your-db-container psql -U database_user
+cat dump_file.sql | docker exec -i your-db-container psql -U database_user
 ```
 - cat dump_file.sql: command to read dump_file.sql.
 - `|`: used to take the outpout from "cat" command and take it as the input to next command.
@@ -46,12 +46,12 @@ cat your_dump.sql | docker exec -i your-db-container psql -U database_user
 In other case, I have also encountered dump file with a .tar extension.
 
 ```
-pg_restore -h hostname_postgresql -U username -d database_name -F t backup_file.tar
+pg_restore -h hostname_postgresql -U username -d database_name -F t dump_file.tar
 ```
 
 for inside docker container:
 
 ```
-pg_restore -U username -d database_name -F t backup_file.tar
+pg_restore -U username -d database_name -F t dump_file.tar
 ```
-- -F t: specifies the format of the backup file, in this case it's in custom format.
+- -F t: specifies the format of the dump file, in this case it's in custom format.
