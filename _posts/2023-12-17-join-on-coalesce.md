@@ -27,7 +27,7 @@ On the first attempt, I use `CASE WHEN` expression to fetch the data. When `colu
 The `EXPLAIN ANALYZE` result is shown in the following image. It takes quite long to execute:
 ![](../assets/img/join_coalesce/explain1.png)
 
-Change the query using `COALESCE` expression in the condition. Referring to <a href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-coalesce/" target="_top"> PostgreSQL COALESCE </a>, The COALESCE function accepts an unlimited number of arguments. It returns the first argument that is not null. If all arguments are null, the COALESCE function will return null.
+Later, I found out that `COALESCE` expression can also be used for join condition. Referring to <a href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-coalesce/" target="_top"> PostgreSQL COALESCE </a>, The COALESCE function accepts an unlimited number of arguments. It returns the first argument that is not null. If all arguments are null, the COALESCE function will return null.
 
 <script src="https://gist.github.com/ameliarahman/fb05c5691c48b01cce65c5f537512425.js"></script>
 See how the EXPLAIN ANALYZE demonstrates a significant improvement compared to the previous query:
