@@ -12,7 +12,7 @@ tags:
 
 There are times when we need to join a table with a null condition. If `column a` is null, then join it using the condition with `column b`, and vice versa.
 
-Initially, I thought it could be easily done using a `CASE WHEN` expression. However, when the data is already large, it poses performance issues.
+Initially, I thought it could be easily done using a `CASE WHEN` expression. However, when dealing with a large data, it poses performance issues.
 
 Let's proceed with example. 
 Create two tables and seed them with 100,000 rows of data:
