@@ -22,13 +22,16 @@ Seed data using `generate series` for each table. Here, I just add a condition t
 <script src="https://gist.github.com/ameliarahman/21a61ca6a27c5773abb0ce7b828efd1e.js"></script>
 
 
-First query using `Case When`:
+On the first try, I use `Case When` expression to fetch the data:
 <script src="https://gist.github.com/ameliarahman/79b0ea419f49a543f8325057508e2bf9.js"></script>
 The `EXPLAIN ANALYZE` result:
 ![](../assets/img/join_coalesce/explain1.png)
 
-Change the query using `Coalesce` expression in the condition:
+Change the query using `Coalesce` expression in the condition. Refers to <a href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-coalesce/" target="_top"> PostgreSQL COALESCE </a>, The COALESCE function accepts an unlimited number of arguments. It returns the first argument that is not null. If all arguments are null, the COALESCE function will return null.
+
 <script src="https://gist.github.com/ameliarahman/fb05c5691c48b01cce65c5f537512425.js"></script>
 See how the EXPLAIN ANALYZE demonstrates a significant result compared to the previous query:
 
 ![](../assets/img/join_coalesce/explain2.png)
+
+That's it.
