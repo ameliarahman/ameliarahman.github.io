@@ -10,13 +10,15 @@ tags:
 - database, query, postgres
 ---
 
-There are times when we need to join a table with a null condition. If `column a` is null, then join it using the condition with column b, and vice versa.
+There are times when we need to join a table with a null condition. If `column a` is null, then join it using the condition with `column b`, and vice versa.
 
 Initially, I thought it could be easily done using a `CASE WHEN` expression. However, when the data is already large, it poses performance issues.
 
 Let's jump to the example. 
 Create two tables and seed them with 100,000 rows of data:
 <script src="https://gist.github.com/ameliarahman/7af1db68d32108f2f49c2b65dffeda7f.js"></script>
+
+Seed data using `generate series` for each table. Here, I just add a condition to set table_a with a null value in one column used for the join condition:
 <script src="https://gist.github.com/ameliarahman/21a61ca6a27c5773abb0ce7b828efd1e.js"></script>
 
 
