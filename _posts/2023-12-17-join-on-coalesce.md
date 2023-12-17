@@ -24,7 +24,7 @@ Seed data using `generate series` for each table. Here, I just add a condition t
 
 On the first attempt, I use `CASE WHEN` expression to fetch the data. When `column_a_1` column is not null then join on condition `column_a_1`, otherwise join with `id` column.
 <script src="https://gist.github.com/ameliarahman/79b0ea419f49a543f8325057508e2bf9.js"></script>
-The `EXPLAIN ANALYZE` result is shown in the following image. It takes more than 5seconds to execute:
+The `EXPLAIN ANALYZE` result is shown in the following image. It takes quite long to execute:
 ![](../assets/img/join_coalesce/explain1.png)
 
 Change the query using `COALESCE` expression in the condition. Referring to <a href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-coalesce/" target="_top"> PostgreSQL COALESCE </a>, The COALESCE function accepts an unlimited number of arguments. It returns the first argument that is not null. If all arguments are null, the COALESCE function will return null.
