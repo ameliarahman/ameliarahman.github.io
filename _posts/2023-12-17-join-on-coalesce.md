@@ -14,7 +14,7 @@ There are times when we need to join a table with a null condition. If `column a
 
 Initially, I thought it could be easily done using a `CASE WHEN` expression. However, when dealing with a large data, it poses performance issue.
 
-Let's proceed with example. 
+Let's proceed with the example. 
 Create two tables and seed them with 100,000 rows of data:
 <script src="https://gist.github.com/ameliarahman/7af1db68d32108f2f49c2b65dffeda7f.js"></script>
 
@@ -22,7 +22,7 @@ Seed data using `generate series` for each table. Here, I just add a condition t
 <script src="https://gist.github.com/ameliarahman/21a61ca6a27c5773abb0ce7b828efd1e.js"></script>
 
 
-On the first attempt, I use `CASE WHEN` expression to fetch the data:
+On the first attempt, I use `CASE WHEN` expression to fetch the data. When `table_a_1` column is not null then join on condition `table_a_1`, otherwise join with `id` column.
 <script src="https://gist.github.com/ameliarahman/79b0ea419f49a543f8325057508e2bf9.js"></script>
 The `EXPLAIN ANALYZE` result is shown in the following image:
 ![](../assets/img/join_coalesce/explain1.png)
