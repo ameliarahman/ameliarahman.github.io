@@ -28,6 +28,7 @@ The `EXPLAIN ANALYZE` result is shown in the following image. It takes quite lon
 ![](../assets/img/join_coalesce/explain1.png)
 
 Later, I found out that `COALESCE` expression can also be used for join condition. Referring to <a href="https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-coalesce/" target="_top"> PostgreSQL COALESCE </a>, The COALESCE function accepts an unlimited number of arguments. It returns the first argument that is not null. If all arguments are null, the COALESCE function will return null.
+So, here is the full query:
 
 <script src="https://gist.github.com/ameliarahman/fb05c5691c48b01cce65c5f537512425.js"></script>
 See how the EXPLAIN ANALYZE demonstrates a significant improvement compared to the previous query:
