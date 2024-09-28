@@ -47,6 +47,8 @@ Let's say we have 3 tables: `users, products, transactions`.
 
 | id | user_id | product_id | quantity | total |
 |--- |---      |---         |---       |---    |
+|    |         |            |          |       |
+|    |         |            |          |       |
 
 What to do when user named Jhon buys 2 books?
 
@@ -105,7 +107,9 @@ There are some `Read Phenomenas` and `Isolation Levels` that we need to know:
 Here are 4 read phenomenas that may happen in an isolation transaction:
 
 #### Dirty Reads
-This phenomena occurs when a transaction reads data that has been written by another concurrent transaction, even if that data is not yet successfully committed. This is just scary, as it may lead to incorrect and inconsistent data, since that transaction could rollback.
+This phenomena occurs when a transaction reads data that has been written by another concurrent transaction, even if that data is not yet successfully committed. 
+
+This is just scary, as it may lead to incorrect and inconsistent data, since that transaction could rollback.
 
 #### Non-Repeatable Reads
 Second phenomena is Non-Repeatable Reads. This occurs when a transaction reads `the specific row` on repeat, but the value changes as other committed transaction modified that row after the first read.
