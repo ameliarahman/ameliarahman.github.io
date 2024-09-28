@@ -28,25 +28,25 @@ As for part of the transaction:
 
 Let's say we have 3 tables: `users, products, transactions`.
 
-##### `users`
+`users`
 
-| id | name  |
-|----|-------|
-| 1  | Jhon  |
-| 2  | David |
+|id   	|name   |
+|---	|---	|
+| 1   	| Jhon 	|
+| 2 	| David |
 
-###### `products`
+`products`
 
 | id | name   | price | quantity |
-|----|--------|-------|----------|
+|--- |---     |---    |---       |
 | 1  | Pencil | 1000  | 10       |
 | 2  | Book   | 2000  | 30       |
 | 3  | Pen    | 3000  | 25       |
 
-###### `transactions`
+`transactions`
 
 | id | user_id | product_id | quantity | total |
-|----|---------|------------|----------|-------|
+|--- |---      |---         |---       |---    |
 
 What to do when user named Jhon buys 2 books?
 
