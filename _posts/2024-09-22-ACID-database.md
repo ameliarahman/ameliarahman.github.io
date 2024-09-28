@@ -12,9 +12,9 @@ tags:
 
 As someone who works with database every single day, it is very useful to understand the four fundamentals that build the database system: `ACID`. 
 
-Recently, I studied about these critical things from  <a href="https://www.udemy.com/course/database-engines-crash-course" target="_top">this very easy to understand course</a> and also other resources, especially <a href="https://www.postgresql.org/docs/current/" target="_top">PostgreSQL document</a> and <a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-acid.html" target="_top">MySQL document</a>. Practicing and summarizing what I learned in writing helps me remember and understand better.
+Recently, I studied about these critical things from  <a href="https://www.udemy.com/course/database-engines-crash-course" target="_top">this very easy to understand course</a> and also other resources, especially from <a href="https://www.postgresql.org/docs/current/" target="_top">PostgreSQL document</a> and <a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-acid.html" target="_top">MySQL document</a>. Practicing and summarizing what I learned in writing helps me remember and understand better.
 
-ACID stands for `Atomicity, Consistency, Isolation and Durability`. We may engage with these concepts often in our daily work without realizing it. But before going further, let's start by discussing the term of `Transaction`.
+ACID stands for __`Atomicity, Consistency, Isolation and Durability`__. We may engage with these concepts often in our daily work without realizing it. But before going further, let's start by discussing the term of `Transaction`.
 
 ## Transaction
 
@@ -28,23 +28,25 @@ As for part of the transaction:
 
 Let's say we have 3 tables: `users, products, transactions`.
 
-`users`
-| id | name    |
-|----|---------|
-| 1  | Jhon    |
-| 2  | David   |
+##### `users`
 
-`products`
-| id | name     | price    | quantity |
-|----|----------|----------|----------|
-| 1  | Pencil   | 1000     | 10       |
-| 2  | Book     | 2000     | 30       |
-| 3  | Pen      | 3000     | 25       |
+| id | name  |
+|----|-------|
+| 1  | Jhon  |
+| 2  | David |
 
-`transactions`
-| id | user_id    | product_id    | quantity |  total |
-|----|------------|---------------|----------|--------|
+###### `products`
 
+| id | name   | price | quantity |
+|----|--------|-------|----------|
+| 1  | Pencil | 1000  | 10       |
+| 2  | Book   | 2000  | 30       |
+| 3  | Pen    | 3000  | 25       |
+
+###### `transactions`
+
+| id | user_id | product_id | quantity | total |
+|----|---------|------------|----------|-------|
 
 What to do when user named Jhon buys 2 books?
 
