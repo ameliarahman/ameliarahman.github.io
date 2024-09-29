@@ -26,17 +26,15 @@ As for part of the transaction:
 - Transaction COMMIT: Commit all the queries in a transaction, write all the changes to disk.
 - Transaction ROLLBACK: if something doesn't work or goes wrong in the middle of transaction, then all processes can be undone, return to the previous state.
 
-Let's say we have 3 tables: `users, products, transactions`.
+Let's say we have 3 tables: `users, products, transactions`:
 
 `users`
-
 |id   	|name   |
 |---	|---	|
 | 1   	| Jhon 	|
 | 2 	| David |
 
 `products`
-
 | id | name   | price | quantity |
 |--- |---     |---    |---       |
 | 1  | Pencil | 1000  | 10       |
@@ -44,7 +42,6 @@ Let's say we have 3 tables: `users, products, transactions`.
 | 3  | Pen    | 3000  | 25       |
 
 `transactions`
-
 | id | user_id | product_id | quantity | total |
 |--- |---      |---         |---       |---    |
 |    |         |            |          |       |
@@ -80,6 +77,12 @@ So, if we look at the example above, if query to update `products` table fails b
 
 Let's jump into practice. I already have 2 docker containers run in my local computer. You can follow this setup: <script src="https://gist.github.com/ameliarahman/f338e22b8cb75648486084f74ede6292.js"></script>
 
+or simply try this command in the terminal:
+
+```yaml
+docker run --name postgresql_acid -d -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=db -e POSTGRES_USER=user postgres:latest
+```
+
 Here is my `docker ps` result:
 
 ![](../assets/img/acid_database/docker_ps.png)
@@ -88,18 +91,18 @@ And I already inserted data in PostgreSQL database as in the example:
 
 ![](../assets/img/acid_database/data_in_db.png)
 
-Now let's make a new transaction where Jhon buys 2 books. But before I update the `products` table, I close the connection from within the container by typing `\q`
+Now let's make a new transaction where Jhon buys 2 books. But before I update the `products` table, I quit the database container:
 
-![](../assets/img/acid_database/close_connection.png)
+![](../assets/img/acid_database/close_container.png)
 
-I go to the container again to check if there is any new row in `transactions` table. But there's still nothing:
+I go into the container again to check if there is any new row in `transactions` table. But there's still nothing:
 ![](../assets/img/acid_database/transaction_nothing.png)
 
-That's what `Atomicity` transaction means, from begin to commit is an atom. Even though I have already typed the insert query for the transactions table, it hasn't been committed yet, so the entire process should rollback.
+That's what `Atomicity` transaction means, from begin to commit is an atom. Even though I have already typed the insert query for the transactions table, it hasn't been committed yet, the entire process should rollback.
 
 ## Isolation
 
-Each DBMS implements isolation level differently. But to understand `Isolation`, consider a scenario where a hundred concurrent users are trying to read from or write to the same table in database. In such cases, could one transaction be affected by others? Or could we ensure that our transaction remains isolated, even with new data being inserted or changed? This is where the concept of isolation becomes crucial. 
+Each DBMS implements isolation level differently. But to understand `Isolation` better, consider a scenario where a hundred concurrent users are trying to read or to write to the same table in database. In such cases, could one transaction be affected by others? Or could we ensure that our transaction remains isolated, even with new data being inserted or modified? This is where the concept of isolation becomes crucial. 
 
 There are some `Read Phenomenas` and `Isolation Levels` that we need to know:
 
@@ -109,7 +112,7 @@ Here are 4 read phenomenas that may happen in an isolation transaction:
 #### Dirty Reads
 This phenomena occurs when a transaction reads data that has been written by another concurrent transaction, even if that data is not yet successfully committed. 
 
-This is just scary, as it may lead to incorrect and inconsistent data, since that transaction could rollback.
+This is just scary, as it may lead to incorrect and inconsistent data when rollback happens.
 
 #### Non-Repeatable Reads
 Second phenomena is Non-Repeatable Reads. This occurs when a transaction reads `the specific row` on repeat, but the value changes as other committed transaction modified that row after the first read.
@@ -133,10 +136,63 @@ A transaction can only read data from other transactions that have been successf
 At this level, a transaction ensures that if a query is executed multiple times, it will always return the same data, even though there are many committed data from other transactions.
 
 #### Snapshot
-It's like a snapshot version of our database at that moment. We can only read the changes that have been committed up to the time of `transaction begin`.
+It's similar to `Repeatable Read`, like a snapshot version of our database at that moment. We can only read the changes that have been committed up to the time of `start of transaction`.
 
 #### Serialization
 At this isolation level, all the transactions will be serialized as if they are executed in order.
+
+
+Let's try one by one both in PostgreSQL and MYSQL.
+
+#### PostgreSQL - Read Uncommitted
+First, let's check what kind of isolation level in our PostgreSQL database:
+![](../assets/img/acid_database/isolation_level_postgreSQL.png)
+
+It's on `read committed` level.
+
+Now, let's change the isolation mode refers to  <a href="https://www.postgresql.org/docs/current/sql-set-transaction.html" target="_top">PostgreSQL documentation about transaction mode</a>:
+
+![](../assets/img/acid_database/uncommitted_pg.png)
+
+During the transaction, I did query select all from the product list. And after that, I made a new read uncommitted transaction in other terminal:
+![](../assets/img/acid_database/uncommitted_pg_2.png)
+
+Go back to the `transaction 1` and did update query on price of `Pencil`:
+![](../assets/img/acid_database/update_uncommitted.png)
+
+It's already changed. But will it be the same in the `transaction 2` even it's not fully committed?
+
+![](../assets/img/acid_database/update_uncommitted_2.png)
+
+The price of pencil is still the same. It's not changed at all!!! So, `read uncommitted` level doesn't occur in this case.
+
+If we check again to <a href="https://www.postgresql.org/docs/current/transaction-iso.html" target="_top">PostgreSQL documentation</a>, it's already stated there : _`In PostgreSQL, you can request any of the four standard transaction isolation levels, but internally only three distinct isolation levels are implemented, i.e., PostgreSQL's Read Uncommitted mode behaves like Read Committed.`_
+
+Now, let's try the same steps in MySQL:
+
+#### MySQL - Read Uncommitted
+Let's check on what level we are:
+![](../assets/img/acid_database/repeatable_read_mysql.png)
+
+We are on `Repeatable Read` isolation level. And now let's change the mode to `Read Uncommitted`
+![](../assets/img/acid_database/read_uncommitted_mysql_1.png)
+
+Do the same in other transaction:
+![](../assets/img/acid_database/read_uncommitted_mysql_2.png)
+
+And update price of the pencil in `transaction 1`:
+
+![](../assets/img/acid_database/update_uncommitted_mysql.png)
+
+Let's move to `transaction 2`
+![](../assets/img/acid_database/update_uncommitted_mysql_2.png)
+The price of pencil is already changed to 15,000 even I'm not committed yet the `transaction 1`. 
+
+How if I do rollback in `transaction 1` and select again products in `transaction 2`:
+
+![](../assets/img/acid_database/rollback_read.png)
+
+It became inconsistent😱😱😱, because the data go back to previous state. Isn't this `Dirty Reads` phenomena scary?!
 
 ### Consistency
 Consistency can be defined in 2 definition:
