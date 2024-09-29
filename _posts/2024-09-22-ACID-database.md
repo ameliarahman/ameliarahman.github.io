@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Fundamental of Database : ACID"
+title: "Fundamental of Database : ACID Part 1"
 description: "A Brief Explanation of ACID"
 date: 2024-09-19 15:23:18
 comments: true
@@ -29,12 +29,14 @@ As for part of the transaction:
 Let's say we have 3 tables: `users, products, transactions`:
 
 `users`
+
 |id   	|name   |
 |---	|---	|
 | 1   	| Jhon 	|
 | 2 	| David |
 
 `products`
+
 | id | name   | price | quantity |
 |--- |---     |---    |---       |
 | 1  | Pencil | 1000  | 10       |
@@ -42,6 +44,7 @@ Let's say we have 3 tables: `users, products, transactions`:
 | 3  | Pen    | 3000  | 25       |
 
 `transactions`
+
 | id | user_id | product_id | quantity | total |
 |--- |---      |---         |---       |---    |
 |    |         |            |          |       |
@@ -79,8 +82,10 @@ Let's jump into practice. I already have 2 docker containers run in my local com
 
 or simply try this command in the terminal:
 
-```yaml
-docker run --name postgresql_acid -d -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=db -e POSTGRES_USER=user postgres:latest
+```bash
+docker run --name postgres_acid -d -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=db -e POSTGRES_USER=user postgres:latest
+
+docker run --name mysql_acid -d -e MYSQL_PASSWORD=password -e MYSQL_DATABASE=db -e MYSQL_USER=user -e MYSQL_ROOT_PASSWORD=password mysql:latest
 ```
 
 Here is my `docker ps` result:
@@ -98,7 +103,7 @@ Now let's make a new transaction where Jhon buys 2 books. But before I update th
 I go into the container again to check if there is any new row in `transactions` table. But there's still nothing:
 ![](../assets/img/acid_database/transaction_nothing.png)
 
-That's what `Atomicity` transaction means, from begin to commit is an atom. Even though I have already typed the insert query for the transactions table, it hasn't been committed yet, the entire process should rollback.
+That's what `Atomicity` transaction means, from begin to commit is a single atom. Even though I have already inserted data into the transactions table, it hasn't been committed yet. So, when a thing goes wrong with the database, the entire process should rollback.
 
 ## Isolation
 
@@ -123,8 +128,8 @@ Phantom Reads happens when a transaction reads `the set of rows`, but when we at
 #### Lost Updates
 This phenomena occurs when we attempt to write something to a table, but upon selecting the data we have already modified, we lost our changes because other transaction also modified the same table.
 
-
 ### Isolation Levels
+There are 5 isolation levels discussed in the course. But basically there are four standard transaction isolation levels without `Snapshot`:
 
 #### Read Uncommitted
 As the name suggests, a transaction at this level can read all data that has not yet been committed by other transactions. In result, `Read Uncommitted` allows `Dirty Reads` to occur.
@@ -138,12 +143,12 @@ At this level, a transaction ensures that if a query is executed multiple times,
 #### Snapshot
 It's similar to `Repeatable Read`, like a snapshot version of our database at that moment. We can only read the changes that have been committed up to the time of `start of transaction`.
 
-#### Serialization
+#### Serializable
 At this isolation level, all the transactions will be serialized as if they are executed in order.
-
 
 Let's try one by one both in PostgreSQL and MYSQL.
 
+### Read Uncommitted Example
 #### PostgreSQL - Read Uncommitted
 First, let's check what kind of isolation level in our PostgreSQL database:
 ![](../assets/img/acid_database/isolation_level_postgreSQL.png)
@@ -154,60 +159,122 @@ Now, let's change the isolation mode refers to  <a href="https://www.postgresql.
 
 ![](../assets/img/acid_database/uncommitted_pg.png)
 
-During the transaction, I did query select all from the product list. And after that, I made a new read uncommitted transaction in other terminal:
+During the transaction, I executed a query to select all from the product list. After that, I initiated a new `READ UNCOMMITTED` transaction in another terminal:
 ![](../assets/img/acid_database/uncommitted_pg_2.png)
 
-Go back to the `transaction 1` and did update query on price of `Pencil`:
+Next, I return to the `transaction 1` and executed an update query on the price of `Pencil`:
 ![](../assets/img/acid_database/update_uncommitted.png)
 
-It's already changed. But will it be the same in the `transaction 2` even it's not fully committed?
+The price has changed. But will it be the same in the `transaction 2` even it's not fully committed?
 
 ![](../assets/img/acid_database/update_uncommitted_2.png)
 
-The price of pencil is still the same. It's not changed at all!!! So, `read uncommitted` level doesn't occur in this case.
+The price of pencil remains unchanged!!! So, `read uncommitted` level doesn't occur in this case. WHY?
 
 If we check again to <a href="https://www.postgresql.org/docs/current/transaction-iso.html" target="_top">PostgreSQL documentation</a>, it's already stated there : _`In PostgreSQL, you can request any of the four standard transaction isolation levels, but internally only three distinct isolation levels are implemented, i.e., PostgreSQL's Read Uncommitted mode behaves like Read Committed.`_
+
+Well, we don't need it anyway, do we?
 
 Now, let's try the same steps in MySQL:
 
 #### MySQL - Read Uncommitted
-Let's check on what level we are:
+Let's check on what level we currently are:
 ![](../assets/img/acid_database/repeatable_read_mysql.png)
 
 We are on `Repeatable Read` isolation level. And now let's change the mode to `Read Uncommitted`
 ![](../assets/img/acid_database/read_uncommitted_mysql_1.png)
 
-Do the same in other transaction:
+Do the same in other terminal for new transaction:
 ![](../assets/img/acid_database/read_uncommitted_mysql_2.png)
 
-And update price of the pencil in `transaction 1`:
-
+Execute update price of the pencil in `transaction 1`:
 ![](../assets/img/acid_database/update_uncommitted_mysql.png)
 
-Let's move to `transaction 2`
+Let's return to `transaction 2`
 ![](../assets/img/acid_database/update_uncommitted_mysql_2.png)
-The price of pencil is already changed to 15,000 even I'm not committed yet the `transaction 1`. 
+The price of pencil has already changed to 15,000 even I'm not committed yet the `transaction 1`. 
 
-How if I do rollback in `transaction 1` and select again products in `transaction 2`:
+How if I do rollback in `transaction 1` and execute select products query again in `transaction 2`:
 
 ![](../assets/img/acid_database/rollback_read.png)
 
 It became inconsistent😱😱😱, because the data go back to previous state. Isn't this `Dirty Reads` phenomena scary?!
 
-### Consistency
+There are also some DBMS support the `READ UNCOMMITTED` except MySQL, but I haven't tried it one by one.
+
+### Read Committed Example
+To check this isolation level, let's do these steps:
+
+1. Change mode of isolation level to `READ COMMITTED`
+2. Create 2 concurrent transactions
+3. Do update in transaction 1
+4. Execute select in both transaction 1 and transaction 2
+5. Do commit in transaction 1
+6. Execute select again in both transaction and see the difference.
+
+This is the result until step 4. The data has not changed in `transaction 2` both in PostgreSQL and MYSQL if the syntax `COMMIT` is not executed yet in `transaction 1`:
+
+#### PostgreSQL
+![](../assets/img/acid_database/read_committed_pg.png)
+
+#### MySQL
+![](../assets/img/acid_database/read_committed_mysql.png)
+
+So, the `Read Committed` level prevents `Dirt Reads` phenomena to happen. But how about `Non-Repeatable Reads` and `Phantom Reads`? Let's continue the steps, `commit transaction 1`:
+
+#### PostgreSQL
+![](../assets/img/acid_database/non_repeatable_read_pg.png)
+
+#### MySQL
+![](../assets/img/acid_database/non_repeatable_read_mysql.png)
+
+If we try to execute the same query as before, the data has already changed in `transaction 2`.
+That's what we called as Non-Repeatable, as stated in PostgreSQL document Non-Repeatable means `A transaction re-reads data it has previously read and finds that data has been modified by another transaction (that committed since the initial read).`
+
+The difference is that `Phantom Reads` occurs when the result set of rows changes due to concurrent transactions, while `Non-Repeatable Reads` happens with specific rows that have been modified by other transactions.
+
+![](../assets/img/acid_database/phantom_reads.png)
+
+Before committing the `transaction 1`, the data that met the condition was 3 both in transaction 1 and 2. However, after committing it, the result set of rows changed to only 2 rows. That is Phantom Reads.
+
+### Repeatable Reads Example
+Do the same steps, but change to `REPEATABLE READS` mode.
+![](../assets/img/acid_database/repeatable_read.png)
+
+No matter how many times I re-read the same table in `transaction 2` after committing `transaction 1`, the value doesn’t change, it's not affected at all, it's fully isolated from other concurrent transactions. That is `Repeatable Reads`.
+
+But, what happen if I execute updates of transactions in circular dependency? `Transaction 1` updates data a to data b, while `Transaction 2` modifies data b to data a. Let's say I have new table named `keys` with the column id and name. And I do transaction in `Repeatable Reads` isolation level.
+
+![](../assets/img/acid_database/serialize_anomaly.png)
+
+Even though there is a change in position, the returned set of rows remains the same: Each count of `Key a` and `Key b` is 2. However, this is not as expected because we want it as serialization transaction.
+
+Now, let's try `Serializable` to check if this thing could be prevented:
+
+### Serializable Example
+Change isolation level to `SERIALIZABLE`, and do the same thing as before:
+
+![](../assets/img/acid_database/serializable.png)
+
+PostgreSQL cannot let us to commit such thing on the `Serializable` level with the reason: `Canceled on identification as a pivot, during conflict out checking.` If we still want to execute that, we need to retry the transaction again. That's how `Serializable` works.
+
+The following table summarizes the impact of transaction isolation levels on read phenomenas:
+
+| Isolation Level   | Dirty Reads |Lost Updates  | Non-Repeatable Reads | Phantom Reads |
+|---                |---          |---           |---                   |---            |
+| Read Uncommitted  | ✔️           | ✔️            | ✔️                    | ✔️             |
+| Read Committed    | X           | ✔️            | ✔️                    | ✔️             |
+| Repeatable Read   | X           | X            | X                    | ✔️             |
+| Serializable      | X           | X            | X                    | X             |
+
+## Consistency
 Consistency can be defined in 2 definition:
 
-#### Consistency in Data
+### Consistency in Data
 Consistency in data can be defined by the user who designs the data model and schema. It includes defining the constraint, rules and also relationship between tables. For example, if a column in one table becomes a foreign key in another table and is modified, then that referred foreign key column must also be updated (referential integrity).
 
 #### Consistency in Reads
 Consistency in reads means that if a column is modified in one transaction, the changes are immediately visible to other transactions. We always get the recent changes, no matter how many transactions are being committed.
 
-### Durability
+## Durability
 Durability in transaction means that every transaction we execute in database is always durable even we lost power or even our database suddenly crashes. If we write something on disk, the data will always be there.
-
-There are some durability techniques:
-
-#### WAL - Write Ahead Log
-#### Asynchronous Snapshot
-#### AOF - Append-Only File
