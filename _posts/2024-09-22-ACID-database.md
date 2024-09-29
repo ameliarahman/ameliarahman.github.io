@@ -108,10 +108,10 @@ That's what `Atomicity` transaction means, from begin to commit is a single atom
 
 Each DBMS implements isolation level differently. But to understand `Isolation` better, consider a scenario where a hundred concurrent users are trying to read or to write to the same table in database. In such cases, could one transaction be affected by others? Or could we ensure that our transaction remains isolated, even with new data being inserted or modified? This is where the concept of isolation becomes crucial. 
 
-There are some `Read Phenomenas` and `Isolation Levels` that we need to know:
+There are some `Read Phenomena` and `Isolation Levels` that we need to know:
 
-### Read Phenomenas
-Here are 4 read phenomenas that may happen in an isolation transaction:
+### Read Phenomena
+Here are 4 read phenomena that may happen in an isolation transaction:
 
 #### Dirty Reads
 This phenomena occurs when a transaction reads data that has been inserted or modified by another concurrent transaction, even if that data is not yet successfully committed. 
@@ -242,7 +242,7 @@ Do the same steps, but change to `REPEATABLE READS` mode.
 
 No matter how many times I re-read the same table in `transaction 2` after committing `transaction 1`, the value doesn’t change, it's not affected at all, it's fully isolated from other concurrent transactions. That is `Repeatable Reads`.
 
-But, what happen if I execute updates of transactions in circular dependency? `Transaction 1` updates data a to data b, while `Transaction 2` modifies data b to data a. Let's say I have new table named `keys` with the column id and name. And I do transaction in `Repeatable Reads` isolation level.
+But, what happen if I execute update of transactions in circular dependency? `Transaction 1` updates data a to data b, while `Transaction 2` modifies data b to data a. Let's say I have new table named `keys` with the column id and name. And I do transaction in `Repeatable Reads` isolation level.
 
 ![](../assets/img/acid_database/serialize_anomaly.png)
 
@@ -257,7 +257,7 @@ Change isolation level to `SERIALIZABLE`, and do the same thing as before:
 
 PostgreSQL cannot let us to commit such thing on the `Serializable` level with the reason: `Canceled on identification as a pivot, during conflict out checking.` If we still want to execute that, we need to retry the transaction again. That's how `Serializable` works.
 
-The following table summarizes the impact of transaction isolation levels on read phenomenas:
+The following table summarizes the impact of transaction isolation levels on read phenomena:
 
 | Isolation Level   | Dirty Reads |Lost Updates  | Non-Repeatable Reads | Phantom Reads |
 |---                |---          |---           |---                   |---            |
