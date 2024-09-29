@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Fundamental of Database : ACID Part 1"
+title: "Fundamental of Database : ACID - Part 1"
 description: "A Brief Explanation of ACID"
 date: 2024-09-19 15:23:18
 comments: true
@@ -47,7 +47,6 @@ Let's say we have 3 tables: `users, products, transactions`:
 
 | id | user_id | product_id | quantity | total |
 |--- |---      |---         |---       |---    |
-|    |         |            |          |       |
 |    |         |            |          |       |
 
 What to do when user named Jhon buys 2 books?
@@ -115,21 +114,21 @@ There are some `Read Phenomenas` and `Isolation Levels` that we need to know:
 Here are 4 read phenomenas that may happen in an isolation transaction:
 
 #### Dirty Reads
-This phenomena occurs when a transaction reads data that has been written by another concurrent transaction, even if that data is not yet successfully committed. 
+This phenomena occurs when a transaction reads data that has been inserted or modified by another concurrent transaction, even if that data is not yet successfully committed. 
 
 This is just scary, as it may lead to incorrect and inconsistent data when rollback happens.
 
 #### Non-Repeatable Reads
-Second phenomena is Non-Repeatable Reads. This occurs when a transaction reads `the specific row` on repeat, but the value changes as other committed transaction modified that row after the first read.
+Second phenomena is Non-Repeatable Reads. This occurs when a transaction reads `the specific row` on repeat, but then the value changes as other committed transaction modified that specific row before we try to re-read within the same transaction.
 
 #### Phantom Reads
-Phantom Reads happens when a transaction reads `the set of rows`, but when we attempt to read them again, the new row(s) have been added or the existing row(s) have been deleted by other committed transaction. 
+Phantom Reads happens when a transaction reads `the set of rows`, but before we attempt to read them again, the new rows have been added or the existing rows have been deleted by other committed transaction, so the result of the set of rows changed. 
 
 #### Lost Updates
 This phenomena occurs when we attempt to write something to a table, but upon selecting the data we have already modified, we lost our changes because other transaction also modified the same table.
 
 ### Isolation Levels
-There are 5 isolation levels discussed in the course. But basically there are four standard transaction isolation levels without `Snapshot`:
+There are 5 isolation levels discussed in the course. But basically there are four standard transaction isolation levels without `Snapshot` level:
 
 #### Read Uncommitted
 As the name suggests, a transaction at this level can read all data that has not yet been committed by other transactions. In result, `Read Uncommitted` allows `Dirty Reads` to occur.
