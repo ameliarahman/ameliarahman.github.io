@@ -12,7 +12,7 @@ tags:
 
 As someone who works with database every single day, it is very useful to understand the four fundamentals that build the database system: `ACID`. 
 
-Recently, I studied about these critical things from  <a href="https://www.udemy.com/course/database-engines-crash-course" target="_top">this very easy to understand course</a> and also other resources, especially from <a href="https://www.postgresql.org/docs/current/" target="_top">PostgreSQL document</a> and <a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-acid.html" target="_top">MySQL document</a>. Practicing and summarizing what I learned in writing helps me remember and understand better.
+Recently, I studied about these critical things from  <a href="https://www.udemy.com/course/database-engines-crash-course" target="_top">this very easy to understand course</a> and also other resources, especially from <a href="https://www.postgresql.org/docs/current/" target="_top">PostgreSQL documentation</a> and <a href="https://dev.mysql.com/doc/refman/8.4/en/mysql-acid.html" target="_top">MySQL documentation</a>. Practicing and summarizing what I learned in writing helps me remember and understand better.
 
 ACID stands for __`Atomicity, Consistency, Isolation and Durability`__. We may engage with these concepts often in our daily work without realizing it. But before going further, let's start by discussing the term of `Transaction`.
 
@@ -68,14 +68,14 @@ BEGIN
 COMMIT
 ```
 
-What if, during a process where the `products` table is being updated, the database suddenly crashes? When it restarts, could the data become inconsistent, because the new data have been already inserted into `transactions`, but `products` table failed to update? This is why we need `Atomicity` in such cases.
+What if, during a process where the `products` table is being updated, the database suddenly crashes? When it restarts, could the data become inconsistent, because the new data have been already inserted into `transactions`, but `products` table failed to update? This is why we need `Atomicity` in such case.
 
 
 ## Atomicity
 
 Atomicity means that all queries within a transaction are treated as a single atom that cannot be split. Regardless of the number of queries —whether it’s one or a hundred— all of them must succeed. And if any one query fails, all previously successful queries must rollback. 
 
-So, if we look at the example above, if query to update `products` table fails before commiting, even the insert query is successfull, all processes must be rolled back.
+So, if we look at the example above, if query to update `products` table fails before commiting, even the insert query is successful, all processes must be rolled back.
 
 Let's jump into practice. I already have 2 docker containers run in my local computer. You can follow this setup: <script src="https://gist.github.com/ameliarahman/f338e22b8cb75648486084f74ede6292.js"></script>
 
@@ -99,7 +99,7 @@ Now let's make a new transaction where Jhon buys 2 books. But before I update th
 
 ![](../assets/img/acid_database/close_container.png)
 
-I go into the container again to check if there is any new row in `transactions` table. But there's still nothing:
+Then, I go into the container again to check if there is any new row in `transactions` table. But there's still nothing:
 ![](../assets/img/acid_database/transaction_nothing.png)
 
 That's what `Atomicity` transaction means, from begin to commit is a single atom. Even though I have already inserted data into the transactions table, it hasn't been committed yet. So, when a thing goes wrong with the database, the entire process should rollback.
@@ -191,7 +191,7 @@ Execute update price of the pencil in `transaction 1`:
 
 Let's return to `transaction 2`
 ![](../assets/img/acid_database/update_uncommitted_mysql_2.png)
-The price of pencil has already changed to 15,000 even I'm not committed yet the `transaction 1`. 
+The price of pencil has already changed to 1,500 even I'm not committed yet the `transaction 1`. 
 
 How if I do rollback in `transaction 1` and execute select products query again in `transaction 2`:
 
@@ -228,7 +228,7 @@ So, the `Read Committed` level prevents `Dirt Reads` phenomena to happen. But ho
 ![](../assets/img/acid_database/non_repeatable_read_mysql.png)
 
 If we try to execute the same query as before, the data has already changed in `transaction 2`.
-That's what we called as Non-Repeatable, as stated in PostgreSQL document Non-Repeatable means `A transaction re-reads data it has previously read and finds that data has been modified by another transaction (that committed since the initial read).`
+That's what we called as Non-Repeatable, as stated in PostgreSQL documentation that Non-Repeatable means `A transaction re-reads data it has previously read and finds that data has been modified by another transaction (that committed since the initial read).`
 
 The difference is that `Phantom Reads` occurs when the result set of rows changes due to concurrent transactions, while `Non-Repeatable Reads` happens with specific rows that have been modified by other transactions.
 
