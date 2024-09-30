@@ -91,7 +91,7 @@ Here is my `docker ps` result:
 
 ![](../assets/img/acid_database/docker_ps.png)
 
-And I already inserted data in PostgreSQL database as in the example:
+I already inserted data in PostgreSQL database as in the example, and if we go inside container, here it looks like:
 
 ![](../assets/img/acid_database/data_in_db.png)
 
