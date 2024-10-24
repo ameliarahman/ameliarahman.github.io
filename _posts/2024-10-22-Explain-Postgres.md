@@ -67,7 +67,7 @@ explain select * from table_a;
 And here is the result of command above:
 ![](../assets/img/SQL_query_planner/seq_scan_1.png)
 
-_Note: Always read the analysis from inside to outside_:
+_Note: If more than one line, always read the analysis from inside to outside_:
 
 Before discussing scanning types, there are 3 outputs that are usually shown:
 
@@ -191,7 +191,7 @@ When using `Bitmap Scan`, PostgreSQL is going to build a bitmap (basically an ar
 
 - At the first, PostgreSQL will do the index scan that meets the condition (`Index Cond: (grade > 90)`).
 - Then gather those pages until the end of scan to become a bitmap. Remember that each page contains many rows, so for the pages that contain qualifying rows, the bit sets to 1, and for pages that do not have filtered rows, it sets to 0.
-- After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to filter out the rows inside the page that meet the condition.
+- After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to select the rows inside the page that meet the condition.
 Fortunately, the example above has the same estimated number of rows before and after rechecking.
 
 That's it.
