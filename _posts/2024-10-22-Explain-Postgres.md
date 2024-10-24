@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Fundamental of Database - Part 2 : SQL Query Planner"
+title: "Fundamental of Database - Part 2 : SQL Query Planner with Explain"
 description: "Description of explain and indexing"
 date: 2024-10-21 15:23:18
 comments: true
 keywords: "Database, Postgres, Query, Explain, Indexing"
 category: [Tech]
 tags:
-- indexing, database
+- indexing, database, query planner, explain, sequential scan, bitmap scan, index scan
 ---
 
 When juggling with a large of data, it is really crucial to know what the database decides to execute our query for optimal performance. Moreover, if we have created index on our data, we need to know whether our query is affected by the index or not? If in the fact the created index doesn't have any affect, we should identify how to improve or to modify the query.
