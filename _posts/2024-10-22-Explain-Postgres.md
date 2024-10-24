@@ -185,13 +185,13 @@ explain select * from table_a where grade > 90;
 ```
 ![](../assets/img/SQL_query_planner/bitmap_heap_scan.png)
 
-There is already an index on grade, but PostgreSQL also knows that the returned set of rows is too large. So, `Bitmap Index scan` happens in this case, when it is too expensive to use index scan, but using sequential scan is also not ideal.
+There is already an index on grade, but PostgreSQL also knows that the returned set of rows is too large. So, `Bitmap Index scan` happens in this case, when it is too expensive to use index scan, but also not ideal to use sequential scan.
 
 When using `Bitmap Scan`, PostgreSQL is going to build a bitmap (basically an array of bits) where the value represents the page number. 
 
 - At the first, PostgreSQL will do the index scan that meets the condition (`Index Cond: (grade > 90)`).
 - Then gather those pages until the end of scan to become a bitmap. Remember that each page contains many rows, so for the pages that contain qualifying rows, the bit sets to 1, and for pages that do not have filtered rows, it sets to 0.
-- After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to filter out the rows inside the page that don't meet the condition.
-Fortunately, the example above has the same extimated number of rows before and after rechecking.
+- After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to filter out the rows inside the page that meet the condition.
+Fortunately, the example above has the same estimated number of rows before and after rechecking.
 
 That's it.
