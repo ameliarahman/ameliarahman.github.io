@@ -17,15 +17,14 @@ In PostgreSQL, I typically use `EXPLAIN` syntax to analyze the query execution p
 Before we jump into practice, let's discuss first about `page` and `heap` in database.
 
 ## Page
-Typically, when a database reads or writes data, it operates on pages, not on individual rows Page is fixed-size block of data used by the database to store information. Each page can fit many rows. Each DBMS has default page, in PostgeSQL the default page is 8 KB (You can observe this in your database client when an empty table is created, as it will show a size of 8 KB). For example, if we have 1001 data rows and each page contains 4 rows, then the database has 1001/4 ~ 251 pages. We can use this query to retrieve the information about estimated number of pages and rows:
+Typically, when a database reads or writes data, it operates on pages, not on individual rows. Each page can fit many rows. Each DBMS has default page, in PostgeSQL the default page is 8 KB (You can observe this in your database client when an empty table is created, as it will show a size of 8 KB). For example, if we have 1001 data rows and each page contains 4 rows, then the database has 1001/4 ~ 251 pages. We can use this query to retrieve the information about estimated number of pages and rows:
 
 ```sql
     SELECT relpages, reltuples FROM pg_class WHERE relname = 'table_name';
 ```
 
 ## Heap
-A heap is collection of pages that represent points to data table. Heap includes everything about table. When a data is inserted into a table, it is stored in the heap.
-
+Heap stores everything about table information. When a data is inserted into a table, it is stored in the heap.
 
 Now, let's discuss about `EXPLAIN` command in PostgreSQL:
 
@@ -33,7 +32,7 @@ Now, let's discuss about `EXPLAIN` command in PostgreSQL:
 EXPLAIN [ ANALYZE ] [ VERBOSE ] statement
 ```
 
-Stated from PostgreSQL documentation:
+Stated from <a href="https://www.postgresql.org/docs/8.1/performance-tips.html#USING-EXPLAIN" target="_top">PostgreSQL documentation</a>:
 - EXPLAIN: Show the execution plan of a statement.
 - ANALYZE: Carry out the command and show the actual run times (__Keep in mind that the statement is actually executed when ANALYZE is used__)
 - VERBOSE: Show the full internal representation of the plan tree, rather than just a summary. Usually this option is only useful for specialized debugging purposes.
@@ -110,6 +109,14 @@ And the result:
 ## Sequential Scan
 If we look from the first example result, there is stated `Seq Scan on table a`. Sequential Scan is the same as `Full Table Scan`, it's just the terminology in PostgreSQL. This means that the database decides to read the entire pages to get the desired data.
 
+Another query example:
+```sql
+explain select * from table_a where name = 'Name 1000000';
+```
+![](../assets/img/SQL_query_planner/parallel_sequential.png)
+
+The `name` column has no index, so the only way to execute the query is `Sequential Scan`. However, we can notice there are `Parallel Seq Scan` and `Workers Planned` stated. These mean that PostgreSQL scan this query sequentially on parallel, execute it on multiple threads.
+
 ## Indexing Scan
 Indexing in a database can be illustrated using the analogy of a dictionary. In a dictionary, the words are indexed by the alphabet. When you need to check a word that starts with certain letter, you can quickly jump to the section, rather than checking each page one by one.
 
@@ -128,15 +135,50 @@ explain select name from table_a where id > 1000;
 And here is the result:
 ![](../assets/img/SQL_query_planner/indexing_scan.png). 
 
-When the data consists of only a small set of rows, the database decides to use the `Index Scan`. However, in the second query where the estimated number of rows is a large (see the estimated result is more than 3 million rows. PostgreSQL has the statistic that calculates this estimation. We can run `ANALYZE` to update the statistic after modifying data), the database switches back to using a `Sequential Scan`. In this case, scanning the index and checking each row to see if it meets the condition is way more expensive than simply scanning all pages and filtering out the unnecessary rows.
+When the data consists of only a small set of rows, the database decides to use the `Index Scan`. However, in the second query where the estimated number of rows is a large (see the estimated result is more than 3 million rows), the database switches back to using a `Sequential Scan`. In this case, scanning the index and checking each row to see if it meets the condition is way more expensive than simply scanning all pages and filtering out the unnecessary rows.
+
+### Index Scan and Index Only Scan
+Let's check the plan for these queries:
+```sql
+ explain select name from table_a where id = 80;
+```
+```sql
+ explain select id from table_a where id = 80;
+```
+![](../assets/img/SQL_query_planner/index_only_scan.png)
+
+The difference is the column to be selected. When selecting name (that is no index), it's using `Index Scan` and when selecting id (that has index), PostgreSQL will use `Index Only Scan` (which can lead to heap fetches 0 as I mentioned earlier). 
+
+So how If we want PostgreSQL to use an `Index Only Scan` when selecting the `name` column? We can create and index with `name` as a non-key column:
+
+```sql
+CREATE INDEX id_name on table_a(id) include(name);
+```
+And see the result now:
+![](../assets/img/SQL_query_planner/index_only_scan_2.png)
 
 ## Bitmap Scan
+I add new column (grade) and insert it with random value and create an index on it:
+```sql
+ALTER TABLE table_a ADD COLUMN grade INTEGER;
+```
+```sql
+UPDATE your_table 
+SET grade = 10 + FLOOR(RANDOM() * 91);
+```
+```sql
+CREATE INDEX index_grade ON table_a (grade);
+```
+Now, let's try to check SQL planner for this query below:
+```sql
+explain select * from table_a where grade > 90;
+```
+![](../assets/img/SQL_query_planner/bitmap_heap_scan.png)
 
+There is an index on grade, but PostgreSQL also knows the returned set of rows is large. So, `Bitmap Index scan` happens when it is too expensive to use index scan, but using sequential scan is also not ideal.
 
+PostgreSQL is going to build a bitmap (basically an array of bits) where the value represents the page number. 
 
+_Always read the analysis from inside to outside_:
 
-
-
-
-
-
+At the first, PostgreSQL will do the index scan that meets the condition (`Index Cond: (grade > 90)`) and gather those pages until the end of scan and become a bitmap. Remember that each page contains many rows, so for the pages that contain qualifying rows, the bit sets to 1, and 0 for pages that do not. After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to filter out the rows inside the page that don't meet the condition.
