@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Fundamental of Database : ACID - Part 1"
+title: "Fundamental of Database - Part 1 : ACID"
 description: "A Brief Explanation of ACID"
 date: 2024-09-19 15:23:18
 comments: true
