@@ -17,7 +17,7 @@ In PostgreSQL, I typically use `EXPLAIN` syntax to analyze the query plan chosen
 Before we jump into practice, let's discuss first about `Page`, `Heap`, and `Index` in database.
 
 ## Page
-Typically, when a database reads or writes data, it operates on pages, not on individual rows. Each page can fit many rows. Each DBMS has default page, in PostgeSQL the default page is 8 KB (You can observe this in your database client when an empty table is created, as it will show a size of 8 KB). For example, if we have 1001 data rows and each page contains 4 rows, then the database has 1001/4 ~ 251 pages. We can use this query to retrieve the information about estimated number of pages and rows:
+Typically, when a database reads or writes data, it operates on pages, not on individual rows. Each page can fit many rows (depends on how many columns, rows, data type etc). Each DBMS has default page, in PostgeSQL the default page is 8 KB (You can observe this in your database client when an empty table is created, as it will show a size of 8 KB). For example, if we have 1001 data rows and each page contains 4 rows, then the database has 1001/4 ~ 251 pages. We can use this query to retrieve the information about estimated number of pages and rows:
 
 ```sql
     SELECT relpages, reltuples FROM pg_class WHERE relname = 'table_name';
@@ -27,7 +27,7 @@ Typically, when a database reads or writes data, it operates on pages, not on in
 Heap is collection of pages. It stores everything about table information. When a data is inserted into a table, it is stored in the heap.
 
 ## Index
-Indexing in a database is another data structure. It can be illustrated using the analogy of a dictionary. In a dictionary, the words are indexed by the alphabet. When you need to check a word that starts with certain letter, you can quickly jump to the section, rather than checking each page one by one.
+Index in a database is another data structure, seperated from the heap but has pointers to the actual data in the heap. It can be illustrated using the analogy of a dictionary. In a dictionary, the words are indexed by the alphabet. When you need to check a word that starts with certain letter, you can quickly jump to the section, rather than checking each page one by one.
 
 ## EXPLAIN
 
@@ -67,7 +67,7 @@ explain select * from table_a;
 And here is the result of command above:
 ![](../assets/img/SQL_query_planner/seq_scan_1.png)
 
-_Note: If more than one line, always read the analysis from inside to outside_:
+_Note: If the result is more than one line, always read the analysis from bottom to top_:
 
 Before discussing scanning types, there are 3 outputs that are usually shown:
 
@@ -89,9 +89,9 @@ Let's try ordering the query above by id:
 
 - **Width**: `Estimated average width`, which is the estimated width of output row in bytes. So, it's highly recommended to select only what is needed in the query (not using select *) to minimize the width of the returned data.
 
-***REMEMBER that the cost, rows and width in `EXPLAIN` is just an estimation, not the actual data.***
+***REMEMBER that the cost, rows and width in `EXPLAIN` is just an estimation, not the actual data. We can add `ANALYZE` command to actually execute the query.***
 
-Now, let's try to add `ANALYZE` after `EXPLAIN` command and execute these queries:
+Now, let's try `EXPLAIN ANALYZE` command and execute these queries:
 
 ```sql
 explain analyze select * from table_a;
@@ -105,7 +105,7 @@ explain analyze select id from table_a where id = 2100000;
 And the result:
 ![](../assets/img/SQL_query_planner/explain_analyze.png)
 
-- **Actual Time**: This means the actual time of executing the query.
+- **Actual Time**: Same as `cost` that has the 2 numbers, represents the `start time` and `end time` of the actual time to execute each step of the query.
 
 - **Loops**: How many times that step was repeated.
 
@@ -187,11 +187,12 @@ explain select * from table_a where grade > 90;
 
 There is already an index on grade, but PostgreSQL also knows that the returned set of rows is too large. So, `Bitmap Index scan` happens in this case, when it is too expensive to use index scan, but also not ideal to use sequential scan.
 
-When using `Bitmap Scan`, PostgreSQL is going to build a bitmap (basically an array of bits) where the value represents the page number. 
+When using `Bitmap Scan`, PostgreSQL is going to build a bitmap (basically an array of bits) where the value represents the page number (bit number zero is the page number zero and so on).
 
 - At the first, PostgreSQL will do the index scan that meets the condition (`Index Cond: (grade > 90)`).
 - Then gather those pages until the end of scan to become a bitmap. Remember that each page contains many rows, so for the pages that contain qualifying rows, the bit sets to 1, and for pages that do not have filtered rows, it sets to 0.
 - After all of relevant pages are collected, the PostgreSQL performs `Bitmap Heap Scan` to access the pages marked as 1 and do rechecking (represented by `Recheck Cond: (grade > 90)`) only to select the rows inside the page that meet the condition.
+
 Fortunately, the example above has the same estimated number of rows before and after rechecking.
 
 That's it.
