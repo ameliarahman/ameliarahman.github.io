@@ -71,7 +71,7 @@ _Note: If the result is more than one line, always read the analysis from bottom
 
 Before discussing scanning types, there are 3 outputs that are usually shown:
 
-- **Cost**:: Always has 2 numbers seperated by 2 dots. The first number (0.00) represents `Estimated start-up cost`, which indicates approximately how many milliseconds the database takes to fetch the first page. In this case, it's 0.00, meaning it cost almost nothing to get the initial result. But if this number increases, that indicates the database has to do a lot of stuff before fetching the result. 
+- **Cost**: Always has 2 numbers seperated by 2 dots. The first number (0.00) represents `Estimated start-up cost`, which indicates approximately how many milliseconds the database takes to fetch the first page. In this case, it's 0.00, meaning it cost almost nothing to get the initial result. But if this number increases, that indicates the database has to do a lot of stuff before fetching the result. 
 Let's try ordering the query above by id:    
     ```sql
     explain select * from table_a order by id;
