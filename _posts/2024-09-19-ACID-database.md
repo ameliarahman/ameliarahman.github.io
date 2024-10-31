@@ -140,7 +140,7 @@ A transaction can only read data from other transactions that have been successf
 At this level, a transaction ensures that if a query is executed multiple times, it will always return the same data, even though there are many committed data from other transactions.
 
 #### Snapshot
-It's similar to `Repeatable Read`, like a snapshot version of our database at that moment. We can only read the changes that have been committed up to the time of `start of transaction`.
+In PostgreSQL, it's similar to `Repeatable Read`, like a snapshot version of our database at that moment. We can only read the changes that have been committed up to the time of `start of transaction`. But on this level, Phantom Read will not happen.
 
 #### Serializable
 At this isolation level, all the transactions will be serialized as if they are executed in order.
