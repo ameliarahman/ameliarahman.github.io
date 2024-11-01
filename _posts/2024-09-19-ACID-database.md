@@ -154,11 +154,11 @@ First, let's check what kind of isolation level in our PostgreSQL database:
 
 It's on `read committed` level.
 
-Now, let's change the isolation mode refers to  <a href="https://www.postgresql.org/docs/current/sql-set-transaction.html" target="_top">PostgreSQL documentation about transaction mode</a>:
+Now, let's change the isolation mode refers to  <a href="https://www.postgresql.org/docs/current/sql-set-transaction.html" target="_top">PostgreSQL documentation about transaction mode</a>: 
 
 ![](../assets/img/acid_database/uncommitted_pg.png)
 
-During the transaction, I executed a query to select all from the product list. After that, I initiated a new `READ UNCOMMITTED` transaction in another terminal:
+During the transaction, I executed a query to select all from the product list. After that, I initiated a new `READ UNCOMMITTED` transaction in another terminal (actually, it has not to be at the same isolation level. It can be only transaction 2 that is `READ UNCOMMITTED` and transaction 1 can use the default isolation).
 ![](../assets/img/acid_database/uncommitted_pg_2.png)
 
 Next, I return to the `transaction 1` and executed an update query on the price of `Pencil`:
