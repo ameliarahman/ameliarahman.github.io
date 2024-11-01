@@ -172,8 +172,6 @@ The price of pencil remains unchanged!!! So, `read uncommitted` level doesn't oc
 
 If we check again to <a href="https://www.postgresql.org/docs/current/transaction-iso.html" target="_top">PostgreSQL documentation</a>, it's already stated there : _`In PostgreSQL, you can request any of the four standard transaction isolation levels, but internally only three distinct isolation levels are implemented, i.e., PostgreSQL's Read Uncommitted mode behaves like Read Committed.`_
 
-Well, we don't need it anyway, do we?
-
 Now, let's try the same steps in MySQL:
 
 #### MySQL - Read Uncommitted
