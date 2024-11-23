@@ -16,7 +16,7 @@ Let’s dive straight into the practice.
 Create a table with 3 columns and seed them with million of data as usual:
 <script src="https://gist.github.com/ameliarahman/ccf0d74fc24ab2764783ec03750a5ca5.js"></script>
 
-Then run these queries below with `EXPLAIN ANALYZE` before query:
+Then run these queries below with `EXPLAIN ANALYZE` before select statement:
 
 ```sql
 -- Query 1
@@ -29,7 +29,7 @@ EXPLAIN ANALYZE SELECT number_c from random_numbers where number_b = 1;
 EXPLAIN ANALYZE SELECT number_c from random_numbers where number_b > 6000000;
 ```
 
-From the result below, we can check that the database decides to use Sequential Scan for all queries:
+From the result below, we can check that the database decides to use Sequential Scan for all queries since the table has no index at all:
 ![](../assets/img/indexing/single_index_result_0.png)
 
 Now, let's try to create various index for the column and see the difference:
