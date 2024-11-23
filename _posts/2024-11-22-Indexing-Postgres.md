@@ -29,7 +29,7 @@ EXPLAIN ANALYZE SELECT number_c from random_numbers where number_b = 1;
 EXPLAIN ANALYZE SELECT number_c from random_numbers where number_b > 6000000;
 ```
 
-The database decides to use Sequential Scan for all queries:
+From the result below, we can check that the database decides to use Sequential Scan for all queries:
 ![](../assets/img/indexing/single_index_result_0.png)
 
 Now, let's try to create various index for the column and see the difference:
@@ -39,13 +39,13 @@ A single index is the index that is created on one specific column of a table.
 For example, if we want to create an index for each `number_a` and `number_b`, we typically can do:
 <script src="https://gist.github.com/ameliarahman/2dccde3545b12b740c15589f0a2578c8.js"></script>
 
-And if we check to the table, now we already have b-tree index on each `number_a` column and `number_b` column:
+And if we check to the table, now we already have btree index on each `number_a` column and `number_b` column:
 ![](../assets/img/indexing/single_index_result.png)
 
 If we re-run again the queries above, now the database's query planner uses the created index during execution:
 ![](../assets/img/indexing/single_index_result_2.png)
 
-However, as I ever mentioned in <a href="https://ameliarahman.github.io/2024-10/Explain-Postgres" target="_top"> this article </a>, it’s also important to always remember that even if an index is created on a column, the database may not use it if the number of rows returned is too large:
+However, as I ever mentioned in <a href="https://ameliarahman.github.io/2024-10/Explain-Postgres" target="_top"> this article </a>, it’s also important to always remember that even if an index is already created on a column, the database may not use it if the number of rows returned is too large. For example:
 
 ```sql
 -- Query 1
@@ -97,5 +97,6 @@ Another observation from the result picture above is that the index is not used 
 Now, let's try to create another single index on `column_b` alone and see the result again:
 ![](../assets/img/indexing/single_index_result_6.png)
 
-All the queries are affected by the index. Even for an `OR` condition, the database chooses to use a Bitmap Index Scan, with both the composite index on `(column_a, column_b)` and the single index on `column_b` for better performance.
+All the queries are affected by the index. Even for an `OR` condition, the database chooses to use a Bitmap Index Scan, with both the composite index on `(column_a, column_b)` and the single index on `column_b` to execute the query.
 
+Of course, there are still ways to enhance performance by using indexing, as well as by understanding how the database query planners and optimizers make decisions based on the data, query structure, and other factors.
