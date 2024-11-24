@@ -89,9 +89,9 @@ Here is the result:
 
 If we check on the analyze result above, since I created a composite index with `number_a` as the first key and `number_b` as the second, the index cannot be used to filter only on the `number_b` column (indicated by Parallel Sequential Scan chosen by the database). This is because the order of columns in a composite index matters. As stated in <a href="https://ameliarahman.github.io/2024-10/Explain-Postgres" target="_top"> Postgres Documentation </a>:
 
-_A multicolumn B-tree index can be used with query conditions that involve any subset of the index's columns, but the index is most efficient when there are constraints on the leading (leftmost) columns. The exact rule is that equality constraints on leading columns, plus any inequality constraints on the first column that does not have an equality constraint, will be used to limit the portion of the index that is scanned_
+_A multicolumn B-tree index can be used with query conditions that involve any subset of the index's columns, but the index is most efficient when there are constraints on the leading (leftmost) columns. The exact rule is that equality constraints on leading columns, plus any inequality constraints on the first column that does not have an equality constraint, will be used to limit the portion of the index that is scanned_.
 
-_Leading (leftmost) columns refer to the columns listed first when we create the composite index. So, in this case is column `number_a`_
+Leading (leftmost) columns refer to the columns listed first when we create the composite index. So, in this case is column `number_a`.
 
 Another observation from the result picture above is that the index is not used for an `OR` condition, as the database executes the query using a Sequential Scan, even though the set of rows is not too large.
 
