@@ -10,7 +10,7 @@ tags:
 - indexing, database, query planner, explain, sequential scan, bitmap scan, index scan
 ---
 
-One effective way to improve query performance is by using indexing. After summarizing the query planner, including the explanation about scan type used by the database<a href="https://ameliarahman.github.io/2024-10/Explain-Postgres" target="_top"> in the previous article </a>, this section briefly outlines methods for creating indexes to enhance performance in PostgreSQL.
+One effective way to improve query performance is by using indexing. After summarizing the query planner, including the explanation about scan type used by the database<a href="https://ameliarahman.github.io/2024-10/Explain-Postgres" target="_top"> in the previous article </a>, this section provides a brief overview of methods for creating indexes to enhance performance in PostgreSQL.
 
 Let’s dive straight into the practice.
 
@@ -100,4 +100,4 @@ Now, let's try to create another single index on `column_b` alone and see the re
 
 All the queries are affected by the index. Even for an `OR` condition, the database chooses to use a Bitmap Index Scan, with both the composite index on `(column_a, column_b)` and the single index on `column_b` to execute the query.
 
-Of course, there are still other ways to enhance performance by using indexing, as well as by understanding how the database query planners and optimizers make decisions based on the data, query structure, and other factors.
+Of course, there are still other ways to enhance performance by using indexing, as well as by understanding how the database query planners and optimizers make decisions based on the data, query structure, and other factors. This knowledge can help determine when to add an index and whether to use a single index, a composite index, or even a combination of both to achieve optimal performance.
