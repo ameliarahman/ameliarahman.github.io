@@ -13,9 +13,9 @@ tags:
 
 Have you ever faced a situation where you were dealing with a very large dataset and wondered if it could be broken into smaller pieces to improve query performance? I have.
 
-There was time when the data had grown to hundreds of millions of records, and indexing alone didn’t significantly improve query performance. The solution to such challenges is `Partitioning`, which can help optimize query execution by allowing the database to scan only the relevant parts of the data.
+There was a time when the data had grown to hundreds of millions of records, and indexing alone didn’t significantly improve query performance. At that point, the solution to this challenge was `Partitioning`, which can help optimize query execution by allowing the database to scan only the relevant parts of the data.
 
-As stated from the <a href="https://www.postgresql.org/docs/current/ddl-partitioning.html" target="_top"> Progress Documentation</a>:
+As stated from the <a href="https://www.postgresql.org/docs/current/ddl-partitioning.html" target="_top"> PosgreSQL Documentation</a>:
 
 > Partitioning refers to splitting what is logically one large table into smaller physical pieces.
 These benefits will normally be worthwhile only when a table would otherwise be very large. The exact point at which a table will benefit from partitioning depends on the application, although a rule of thumb is that the size of the table should exceed the physical memory of the database server.
@@ -63,11 +63,11 @@ create index concurrently on reports(date);
 Let's execute again the query above and see the result:
 ![](../assets/img/partitioning/partitioning_range_2.png)
 
-The database still decides to use `Sequential Scan` as returned data is too large.
+The execution time is still quite long, and the database continues to use a `Sequential Scan` because the amount of returned data is too large.
 
 Next step:
 - Let's create a new partitioned table
-- Create partitions from that parent table
+- Create partitions from that main table
 - Seed them by the data from the `reports` table. 
 
 Here are the steps:
@@ -80,16 +80,15 @@ explain analyze select * from reports_partition where (date >= '2020-01-01' AND 
 ```
 ![](../assets/img/partitioning/partitioning_range_3.png)
 
-We can observe from the result above that even though the database decides to use a `Sequential Scan`, the execution time is significantly better than before. This improvement is because the database no longer scans the entire dataset; instead, it performs a Seq Scan only on the `relevant partition`(in this case is on `reports_partition_2020` , as shown in the first row of the result).
+We can observe from the result above that even though the database decides to use a `Sequential Scan`, the execution time is significantly better than before. This improvement is because the database no longer scans the entire dataset; instead, it performs a Seq Scan only on the `relevant partition`(in this case is on `reports_partition_2020`, as shown in the first row of the result).
 
-In addition, we can also directly access the data from the partitions:
+In addition, we can also directly access the data from the partition itself:
 
 ```sql
 select * from reports_partition_2020 where (date >= '2020-01-01' AND date < '2020-06-01');
 ```
 
-
-> Another important note: if we create an index on the main table `reports_partition` using the following command:
+Another important note: if we create an index on the main table `reports_partition` using the following command:
 ```sql
 create index concurrently on reports_partition(date);
 ```
@@ -99,9 +98,11 @@ The index will automatically be created on each of the partitions as well, as sh
 
 
 #### List Partitioning
+The second method is `List Partitioning`. Quoted from Official PostgreSQL Documentation:
+
 > The table is partitioned by explicitly listing which key value(s) appear in each partition.
 
-This is another partitioning method, where we can divide our data based on specific values in a column.
+This is another partitioning method where we can divide our data based on specific values in a column.
 
 Let's say we have `stores` table that has 3 location data ('Jakarta', 'Sukabumi', 'Bogor'). We can partition the table based on the location column, so that whenever new data is inserted, it will automatically be routed to the specific partition based on the location:
 
@@ -129,7 +130,7 @@ The last partitioning method is `Hash Partitioning`. This method can be particul
 Let's drop the partitioned table `stores` and re-create again using partitioning by hash:
 <script src="https://gist.github.com/ameliarahman/756d36194d325efecc198040eba416e5.js"></script>
 
-- `MODULUS` means that the data will be divided into certain partitions (in this case is 3 partitions).
+- `MODULUS` means that the data will be divided into certain partitions (in this case, there are 3 partitions).
 - `REMAINDER` specifies which partition a row will go to based on the hash value created from the value in the partition key.
 
 And if we execute these queries:
@@ -144,3 +145,5 @@ EXPLAIN ANALYZE select * from stores where id = 3;
 The database scans only the specific partitions where the relevant data is stored:
 ![](../assets/img/partitioning/partitioning_hash_1.png)
 
+
+Happy practicing!
