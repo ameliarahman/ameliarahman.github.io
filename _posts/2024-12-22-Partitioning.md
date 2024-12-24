@@ -17,14 +17,14 @@ There was time when the data had grown to hundreds of millions of records, and i
 
 As stated from the <a href="https://www.postgresql.org/docs/current/ddl-partitioning.html" target="_top"> Progress Documentation</a>:
 
-```
+`
 Partitioning refers to splitting what is logically one large table into smaller physical pieces.
 
 These benefits will normally be worthwhile only when a table would otherwise be very large. The exact point at which a table will benefit from partitioning depends on the application, although a rule of thumb is that the size of the table should exceed the physical memory of the database server.
-```
+`
 
 ### Partitioning Methods in PostgreSQL
-There are 3 partitiong methods that PostgreSQL offers:
+There are 3 partitioning methods that PostgreSQL offers:
 1. Range Partitioning
 2. List Partitioning
 3. Hash Partitioning
@@ -32,9 +32,7 @@ There are 3 partitiong methods that PostgreSQL offers:
 Let's break down one by one with the example scenarios.
 
 #### Range Partitioning
-```
-The table is partitioned into “ranges” defined by a key column or set of columns, with no overlap between the ranges of values assigned to different partitions. For example, one might partition by date ranges, or by ranges of identifiers for particular business objects. Each range's bounds are understood as being inclusive at the lower end and exclusive at the upper end. For example, if one partition's range is from 1 to 10, and the next one's range is from 10 to 20, then value 10 belongs to the second partition not the first.
-```
+> The table is partitioned into “ranges” defined by a key column or set of columns, with no overlap between the ranges of values assigned to different partitions. For example, one might partition by date ranges, or by ranges of identifiers for particular business objects. Each range's bounds are understood as being inclusive at the lower end and exclusive at the upper end. For example, if one partition's range is from 1 to 10, and the next one's range is from 10 to 20, then value 10 belongs to the second partition not the first.
 
 This is the method that I ever implemented.
 
@@ -58,7 +56,7 @@ Now, let's create index on column `date`.
 create index on reports(date);
 ```
 
-When creating an index in a production environment, it is better to use the `CONCURRENTLY` option to avoid locking concurrent transactions on the table. This ensures that the table remains accessible for reads and writes during the indexing process by other transactions.
+> When creating an index in a production environment, it is better to use the `CONCURRENTLY` option to avoid locking concurrent transactions on the table. This ensures that the table remains accessible for reads and writes during the indexing process by other transactions.
 
 ```sql
 create index concurrently on reports(date);
@@ -81,7 +79,7 @@ explain analyze select * from reports_partition where (date >= '2020-01-01' AND 
 
 We can observe from the result above that even though the database decides to use a `Sequential Scan`, the execution time is significantly better than before. This improvement is because the database no longer scans the entire dataset; instead, it performs a Seq Scan only on the `relevant partition`(in this case is on `reports_partition_2020` , as shown in the first row of the result).
 
-Another important note: if we create an index on the parent table `reports_partition` using the following command:
+> Another important note: if we create an index on the parent table `reports_partition` using the following command:
 ```sql
 create index concurrently on reports_partition(date);
 ```
@@ -91,9 +89,8 @@ The index will automatically be created on each of the partitions as well, as sh
 
 
 #### List Partitioning
-```
-The table is partitioned by explicitly listing which key value(s) appear in each partition.
-```
+> The table is partitioned by explicitly listing which key value(s) appear in each partition.
+
 This is another partitioning method, where we can divide our data based on specific values in a column.
 
 Let's say we have `stores` table that has 3 location data ('Jakarta', 'Sukabumi', 'Bogor'). We can partition the table based on the location column, so that whenever new data is inserted, it will automatically be routed to the specific partition based on the location:
@@ -115,9 +112,7 @@ And here is the result:
 We can see that the database only scans on the relevant partitions that affect the execution time.
 
 #### Hash Partitioning
-```
-The table is partitioned by specifying a modulus and a remainder for each partition. Each partition will hold the rows for which the hash value of the partition key divided by the specified modulus will produce the specified remainder.
-```
+> The table is partitioned by specifying a modulus and a remainder for each partition. Each partition will hold the rows for which the hash value of the partition key divided by the specified modulus will produce the specified remainder.
 
 The last partitioning method is `Hash Partitioning`. This method can be particularly useful when we don't have a range or list to partition by.
 
@@ -138,3 +133,4 @@ EXPLAIN ANALYZE select * from stores where id = 3;
 
 The database scans only the specific partitions where the relevant data is stored:
 ![](../assets/img/partitioning/partitioning_hash_1.png)
+
