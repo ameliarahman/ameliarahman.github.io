@@ -17,11 +17,8 @@ There was time when the data had grown to hundreds of millions of records, and i
 
 As stated from the <a href="https://www.postgresql.org/docs/current/ddl-partitioning.html" target="_top"> Progress Documentation</a>:
 
-`
-Partitioning refers to splitting what is logically one large table into smaller physical pieces.
-
+> Partitioning refers to splitting what is logically one large table into smaller physical pieces.
 These benefits will normally be worthwhile only when a table would otherwise be very large. The exact point at which a table will benefit from partitioning depends on the application, although a rule of thumb is that the size of the table should exceed the physical memory of the database server.
-`
 
 ### Partitioning Methods in PostgreSQL
 There are 3 partitioning methods that PostgreSQL offers:
@@ -32,9 +29,10 @@ There are 3 partitioning methods that PostgreSQL offers:
 Let's break down one by one with the example scenarios.
 
 #### Range Partitioning
+
 > The table is partitioned into “ranges” defined by a key column or set of columns, with no overlap between the ranges of values assigned to different partitions. For example, one might partition by date ranges, or by ranges of identifiers for particular business objects. Each range's bounds are understood as being inclusive at the lower end and exclusive at the upper end. For example, if one partition's range is from 1 to 10, and the next one's range is from 10 to 20, then value 10 belongs to the second partition not the first.
 
-This is the method that I ever implemented.
+This is the method that I ever implemented. Basically, the data will be divided into several parts based on the specified range.
 
 For the practical purpose, let's just create these tables in our database:
 <script src="https://gist.github.com/ameliarahman/82cabd0c015aa3997cd49a1406d98906.js"></script>
@@ -49,7 +47,7 @@ explain analyze select * from reports where (date >= '2020-01-01' AND date < '20
 And here is the result:
 ![](../assets/img/partitioning/partitioning_range_1.png)
 
-The time to execute the query is quite long, even the database decided to use `Parallel` in Sequential Scanning.
+The time to execute the query is quite long, even the database decides to use `Parallel` in Sequential Scanning.
 
 Now, let's create index on column `date`.
 ```sql
@@ -67,7 +65,12 @@ Let's execute again the query above and see the result:
 
 The database still decides to use `Sequential Scan` as returned data is too large.
 
-Next step, let's create a new partioned table, create partitions from that table and seed them by the data from the `reports` table. Here are the steps:
+Next step:
+- Let's create a new partitioned table
+- Create partitions from that parent table
+- Seed them by the data from the `reports` table. 
+
+Here are the steps:
 
 <script src="https://gist.github.com/ameliarahman/9a8b74877931773295a56391682563b3.js"></script>
 
@@ -79,7 +82,14 @@ explain analyze select * from reports_partition where (date >= '2020-01-01' AND 
 
 We can observe from the result above that even though the database decides to use a `Sequential Scan`, the execution time is significantly better than before. This improvement is because the database no longer scans the entire dataset; instead, it performs a Seq Scan only on the `relevant partition`(in this case is on `reports_partition_2020` , as shown in the first row of the result).
 
-> Another important note: if we create an index on the parent table `reports_partition` using the following command:
+In addition, we can also directly access the data from the partitions:
+
+```sql
+select * from reports_partition_2020 where (date >= '2020-01-01' AND date < '2020-06-01');
+```
+
+
+> Another important note: if we create an index on the main table `reports_partition` using the following command:
 ```sql
 create index concurrently on reports_partition(date);
 ```
