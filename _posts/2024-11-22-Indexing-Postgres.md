@@ -2,7 +2,7 @@
 layout: post
 title: "Fundamental of Database - Part 3 : Single Index vs Composite Index"
 description: "Description of some indexing in Postgres"
-date: 2024-10-21 15:23:18
+date: 2024-11-22 15:23:18
 comments: true
 keywords: "Database, Postgres, Query, Explain, Indexing"
 category: [Tech]
