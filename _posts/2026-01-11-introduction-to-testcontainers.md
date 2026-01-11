@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Introduction to Testcontainers"
+title: "Using Testcontainers for Zero-Config Testing"
 description: "Discover how to automate your infrastructure requirements inside your Go test suite using Docker and Testcontainers"
 date: 2026-01-11 10:00:00
 comments: true
