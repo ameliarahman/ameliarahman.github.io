@@ -12,7 +12,7 @@ tags:
 
 
 Have you ever struggled with running test of your application? 
-I’ve ever spent hours facing the flaky tests, only to realize the problem wasn't my code, it was the test environment. Sometimes, a test passes on my local but fails in CI, or vice versa because of a 'shared' database conflict. Sometimes, using mock is not reliable.
+I’ve ever spent hours facing the flaky tests, only to realize the problem wasn't my code, it was the test environment. Sometimes, a test passes on my local but fails in CI because of a 'shared' database conflict. Or perhaps you've relied on mocks, only to find they aren't reliable enough to catch the issue.
 
 The answer for those problems is <a href="https://github.com/testcontainers" target="_blank"> Testcontainers</a>. 
 
