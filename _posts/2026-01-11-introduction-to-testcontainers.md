@@ -2,7 +2,7 @@
 layout: post
 title: "Introduction to Testcontainers"
 description: "Discover how to automate your infrastructure requirements inside your Go test suite using Docker and Testcontainers"
-date: 2026-03-18 10:00:00
+date: 2026-01-11 10:00:00
 comments: true
 keywords: "Docker, testcontainers, golang, infra, postgresql"
 category: [Tech]
