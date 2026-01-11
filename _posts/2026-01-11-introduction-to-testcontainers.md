@@ -12,7 +12,7 @@ tags:
 
 
 Have you ever struggled with running test for your application? 
-I’ve ever spent hours facing the flaky tests, only to realize the problem wasn't my code, it was the test environment. Sometimes, a test passes on my local but fails in CI because of a 'shared' database conflict. Or perhaps you've relied on mocks, only to find they aren't reliable enough to catch the issue.
+I’ve ever spent hours facing the flaky tests, only to realize the problem wasn't my code, it was the test environment. Sometimes, a test passed on my local but failed in CI because of a 'shared' database conflict. Or perhaps you've relied on mocks, only to find they weren't reliable enough to catch the issue.
 
 The answer for those problems is <a href="https://github.com/testcontainers" target="_blank"> Testcontainers</a>. 
 
@@ -59,7 +59,7 @@ Refers to the documentation:
 
 Can we see the difference?
 
-`Testcontainers` help us to just define our service as a code. Before, we have to rely on a "pre-installed" database, we need to manually config the database and then make sure it is already running before we run the test. Furthermore, the database itself might contain old data from a previous test if we forget to clean up or to destroy the database. By using testcontainers, everything is like a new one and clean at the start of every test.
+`Testcontainers` help us to just define our service as a code. Before, we have to rely on a "pre-installed" database, we need to manually config the database and then make sure it is already running before we run the test. Furthermore, the database itself might contain old data from a previous test if we forget to clean up the data. By using testcontainers, everything is like a new one and clean at the start of every test.
 The documentation also stated that we can reuse the same Postgres Docker container to run mulriple tests in a single file.
 
 It is important to note that `Testcontainers` isn't just for Postgres. Whether you need Redis for caching, Kafka for messaging, or even a specialized search engine like Elasticsearch, the philosophy remains the same. As the official documentation states:
