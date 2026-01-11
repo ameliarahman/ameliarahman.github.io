@@ -11,7 +11,7 @@ tags:
 ---
 
 
-Have you ever struggled with running test of your application? 
+Have you ever struggled with running test for your application? 
 I’ve ever spent hours facing the flaky tests, only to realize the problem wasn't my code, it was the test environment. Sometimes, a test passes on my local but fails in CI because of a 'shared' database conflict. Or perhaps you've relied on mocks, only to find they aren't reliable enough to catch the issue.
 
 The answer for those problems is <a href="https://github.com/testcontainers" target="_blank"> Testcontainers</a>. 
@@ -37,7 +37,7 @@ Create a new directory and install what is neeeded:
 
 ## Create Test Scenario
 
-Let's try to create two ways of testing:
+Let's try to compare two different testing strategies:
 
 ### Without Testcontainers
 This is just manual test that I used to do:
